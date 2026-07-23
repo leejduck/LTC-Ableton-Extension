@@ -87,6 +87,7 @@ When Developer Mode is on, Live deliberately shuts down its managed Extension Ho
 - Use a constant tempo across the source MIDI clip. The current Extensions API exposes the region in beats and the song's current tempo, but not a beat-to-time conversion across a tempo automation map. A region spanning tempo changes may produce an audio file with the wrong real-time length.
 - Each generation currently creates a new LTC audio track.
 - This release candidate is supported only on explicitly tested Extensions-capable Live 12 Suite builds.
+- For the cleanest LTC boundaries, disable **Settings → Record, Warp & Launch → Create Fades on Clip Edges** before generation. When enabled, Live may apply a short fade to the beginning and end of the placed clip, potentially costing the first or last decoded LTC frame. This does not alter the generated WAV source and is not considered a release blocker. See Ableton's [clip-edge fade documentation](https://help.ableton.com/hc/en-us/articles/209069969-Create-Fades-on-Clip-Edges-to-avoid-clicks).
 
 ## Privacy and network use
 
