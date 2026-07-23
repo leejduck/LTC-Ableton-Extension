@@ -1,0 +1,17 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log
+
+node_modules/
+dist/
+coverage/
+
+# Ableton distributes the Extensions SDK under its own license. Download the
+# current SDK from Ableton's beta portal; do not commit or redistribute it.
+vendor/ableton-extensions-*.tgz
+
+# Release packages are attached to releases instead of committed as source.
+*.ablx
+artifacts/

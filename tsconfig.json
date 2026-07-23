@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    // Use the NodeNext module system to allow mixing CommonJS and ES modules and to
+    // properly resolve `.d.mts` type definition files from the Ableton SDK.
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "esnext",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "types": ["node"],
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"]
+}

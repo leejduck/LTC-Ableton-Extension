@@ -1,0 +1,33 @@
+{
+  "name": "timecode-generator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Generate LTC audio clips from Arrangement MIDI clip names and regions in Ableton Live.",
+  "license": "UNLICENSED",
+  "repository": "https://github.com/leejduck/LTC-Ableton-Extension",
+  "main": "dist/extension.cjs",
+  "engines": {
+    "node": ">=24.16.0"
+  },
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "test:libltc": "node --import tsx tests/verify-libltc.ts",
+    "verify": "npm run typecheck && npm test && npm run test:libltc && npm run build",
+    "build": "tsc --noEmit && tsx build.ts --production",
+    "build:dev": "tsc --noEmit && tsx build.ts",
+    "start": "npm run build:dev && extensions-cli run",
+    "package": "npm run build && extensions-cli package"
+  },
+  "dependencies": {
+    "@ableton-extensions/sdk": "file:./vendor/ableton-extensions-sdk-1.0.0-beta.0.tgz"
+  },
+  "devDependencies": {
+    "@ableton-extensions/cli": "file:./vendor/ableton-extensions-cli-1.0.0-beta.0.tgz",
+    "@types/node": "^24.1.0",
+    "esbuild": "0.28.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
+  }
+}

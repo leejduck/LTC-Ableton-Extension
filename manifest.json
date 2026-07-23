@@ -1,0 +1,7 @@
+{
+  "name": "timecode-generator",
+  "version": "1.0.0",
+  "author": "Duck Lights",
+  "entry": "dist/extension.cjs",
+  "minimumApiVersion": "1.0.0"
+}
