@@ -15,3 +15,7 @@ vendor/ableton-extensions-*.tgz
 # Release packages are attached to releases instead of committed as source.
 *.ablx
 artifacts/
+
+# Private product, commercial, and release-planning notes. Keep these local and
+# out of the public repository.
+internal-docs/

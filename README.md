@@ -1,17 +1,29 @@
-# LTC Ableton Extension
+# duckTC LTC Generator
 
-Generate an unwarped SMPTE LTC audio clip from an Arrangement-view MIDI clip. The MIDI clip's name supplies the starting timecode, and its region supplies the placement and duration.
+### Extension for Ableton Live
 
-The Extension is a one-shot, offline tool: right-click a MIDI clip, choose **Generate LTC**, and Live creates a new audio track containing the generated LTC file.
+Turn an Arrangement-view MIDI clip into an unwarped SMPTE LTC audio clip. The MIDI clip name supplies the starting timecode, while the clip region supplies its placement and duration.
 
-## Compatibility status
+duckTC LTC Generator is an offline, one-shot workflow: right-click a MIDI clip, choose **Generate LTC**, and the Extension creates a new audio track containing the generated LTC file.
 
-- Ableton Live 12 Suite 12.4.5b8 on macOS: release-candidate validation in progress.
-- Ableton Extensions API: 1.0.0 using the current `1.0.0-beta.0` SDK package.
-- Extension development runtime: Node.js 24.16.0 or newer.
-- Current stable Live 12.4.3 does not include Extensions. A final smoke test is required when Ableton releases the Extensions-capable public build.
+> **Public beta notice:** Ableton Extensions are currently available through supported Ableton Live 12 Suite beta builds. This project is a tested release candidate, not yet a final commercial release.
+
+## Current status
+
+- Successfully tested with Ableton Live 12 Suite 12.4.5b8 on macOS.
+- Generated LTC successfully synchronized a grandMA3 Command Wing LTC input without observed packet or synchronization issues.
+- Built against Ableton Extensions API 1.0.0 using the `1.0.0-beta.0` SDK.
+- Uses Node.js 24.16.0 or newer for the Extension development runtime.
+- A final macOS and Windows smoke test is required on Ableton's first public Extensions-capable Live release.
 
 Ableton currently documents Extensions as a Live 12 Suite beta feature. See the [Ableton Extensions FAQ](https://help.ableton.com/hc/en-us/articles/27303428331420-Ableton-Extensions-FAQ) and [Extensions SDK page](https://ableton.github.io/extensions-sdk/).
+
+## What it creates
+
+- Mono, 48 kHz, 16-bit PCM LTC audio
+- An unwarped Arrangement audio clip
+- A new LTC audio track aligned with the source MIDI clip
+- A project-managed audio asset that remains available after temporary generation files are removed
 
 ## Supported LTC formats
 
@@ -25,7 +37,19 @@ Ableton currently documents Extensions as a Live 12 Suite beta feature. See the 
 
 The generator uses the exact fractional rates for 23.976 and 29.97, correct 29.97 drop-frame label skipping, SMPTE BCD field layout, phase-correction parity, and biphase-mark encoding. A terminal half-bit transition closes the final frame for downstream decoders.
 
-## Clip naming
+## Install
+
+1. Open **Settings → Extensions** in an Extensions-capable Ableton Live 12 Suite build.
+2. Install the release `.ablx` file using **Choose file**, or drag it into the Extensions panel.
+3. Keep **Developer Mode** off for normal installed-extension use.
+4. Create an Arrangement-view MIDI clip covering the desired LTC region.
+5. Rename the clip with its starting timecode.
+6. Right-click the MIDI clip and choose **Extensions → timecode-generator: Generate LTC**.
+7. Confirm that Live creates an unwarped audio clip on a new LTC audio track at the same Arrangement position.
+
+Developer Mode stops Live's managed Extension Host and is intended only when a developer launches the host manually with `npm start` or `extensions-cli run`.
+
+## Clip naming and quick start
 
 Name the source MIDI clip with a starting timecode. Examples:
 
@@ -48,16 +72,6 @@ LTC | 29.97 DF | 16b | 48k
 
 The output is currently fixed at mono, 48 kHz, 16-bit PCM.
 
-## Install and use
-
-1. In an Extensions-capable Ableton Live 12 Suite build, open **Settings → Extensions**.
-2. Install the release `.ablx` package using **Choose file** or drag it into the Extensions panel.
-3. Keep **Developer Mode** off for normal installed-extension use. Developer Mode stops Live's managed Extension Host and is intended only when you launch the host yourself with `npm start` or `extensions-cli run`.
-4. Create an Arrangement-view MIDI clip covering the desired LTC region.
-5. Rename it with the starting timecode.
-6. Right-click the MIDI clip and choose **Extensions → timecode-generator: Generate LTC**.
-7. Confirm that Live creates an unwarped audio clip on a new LTC audio track at the same Arrangement position.
-
 ### The Extensions menu is missing
 
 If the extension is listed as installed but no **Extensions** submenu appears when you right-click a MIDI clip:
@@ -68,9 +82,23 @@ If the extension is listed as installed but no **Extensions** submenu appears wh
 
 When Developer Mode is on, Live deliberately shuts down its managed Extension Host and waits for a developer-run host process. This can make a correctly installed `.ablx` look inactive without showing a package error.
 
-## Important tempo limitation
+## Current limitations
 
-The Extensions API currently exposes the MIDI region in beats and the song's current tempo, but not a beat-to-time conversion across a tempo automation map. Use a constant tempo across the source MIDI clip. A region spanning tempo changes may not produce an audio file with the correct real-time length.
+- Use a constant tempo across the source MIDI clip. The current Extensions API exposes the region in beats and the song's current tempo, but not a beat-to-time conversion across a tempo automation map. A region spanning tempo changes may produce an audio file with the wrong real-time length.
+- Each generation currently creates a new LTC audio track.
+- This release candidate is supported only on explicitly tested Extensions-capable Live 12 Suite builds.
+
+## Privacy and network use
+
+The Extension works locally and does not make network requests. It does not require an account, collect telemetry, or perform online license validation.
+
+Generation uses a unique temporary directory, imports the completed WAV into the Live project, and removes its temporary working files afterward.
+
+## Releases and support
+
+Versioned `.ablx` packages and checksums will be published through this repository's [Releases](https://github.com/leejduck/LTC-Ableton-Extension/releases) page once the public-release test matrix is complete.
+
+Use [GitHub Issues](https://github.com/leejduck/LTC-Ableton-Extension/issues) for reproducible defects and compatibility reports. Include the operating system, exact Ableton Live version, source clip name, frame rate, and relevant Extension Host log output.
 
 ## Development
 
@@ -91,10 +119,12 @@ npm run package
 
 `npm run verify` performs type checking, parser and timecode-vector tests, an independent vendored-libltc decode across all supported rates, and a production bundle.
 
-The Extension does not make network requests. Generation uses a unique temporary directory, imports the finished WAV into the Live project, and removes the temporary working files afterward.
-
 ## Source and third-party licensing
 
-No open-source license is granted for the LTC Ableton Extension source at this time. The independent test harness uses the vendored [libltc](https://github.com/x42/libltc) source under its own LGPL-3.0-or-later terms; its license and notices remain in `vendor/libltc/`.
+No open-source license is granted for the duckTC LTC Generator source at this time. Public visibility of this repository does not grant permission to redistribute, sublicense, or commercially reuse the source.
+
+The independent test harness uses the vendored [libltc](https://github.com/x42/libltc) source under its own LGPL-3.0-or-later terms; its license and notices remain in `vendor/libltc/`.
 
 The Ableton Extensions SDK and CLI are not part of this repository. Their use and redistribution are governed by Ableton's license.
+
+Ableton and Live are trademarks of Ableton AG. duckTC LTC Generator is an independent product and is not affiliated with or endorsed by Ableton AG.
