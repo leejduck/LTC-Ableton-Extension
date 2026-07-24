@@ -192,3 +192,29 @@ test("streams a correctly sized 16-bit mono WAV with stable naming", async () =>
     "01-02-03-04_29.97DF",
   );
 });
+
+test("cancels streamed WAV generation without leaving a completed file", async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), "duck-ltc-cancel-test-"));
+  const filePath = path.join(directory, "cancelled.wav");
+  const controller = new AbortController();
+  controller.abort(new Error("cancel test"));
+  try {
+    await assert.rejects(
+      writeLtcWavFile(
+        filePath,
+        0,
+        300,
+        30,
+        false,
+        48_000,
+        0,
+        0.8,
+        controller.signal,
+      ),
+      /cancel test/,
+    );
+    await assert.rejects(stat(filePath));
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});

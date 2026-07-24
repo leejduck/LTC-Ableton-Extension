@@ -1,13 +1,13 @@
 {
-  "name": "timecode-generator",
-  "version": "1.0.0",
+  "name": "ducktc-ltc-generator",
+  "version": "1.1.0",
   "private": true,
   "description": "Generate LTC audio clips from Arrangement MIDI clip names and regions in Ableton Live.",
   "license": "UNLICENSED",
   "repository": "https://github.com/leejduck/LTC-Ableton-Extension",
   "main": "dist/extension.cjs",
   "engines": {
-    "node": ">=24.16.0"
+    "node": ">=24.14.1"
   },
   "type": "module",
   "scripts": {

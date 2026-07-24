@@ -630,6 +630,7 @@ export async function writeLtcWavFile(
   sampleRate = 48000,
   cutoffHz = 0,
   amplitude = 0.8,
+  abortSignal?: AbortSignal,
 ): Promise<string> {
   const normalizedRate = validateSynthesisArguments(
     startFrame,
@@ -651,12 +652,19 @@ export async function writeLtcWavFile(
   let handle: fs.FileHandle | undefined;
   let samplesWritten = 0;
   const synthesisState: SynthesisState = { phase: 1, sampleRemainder: 0.5 };
+  const throwIfAborted = (): void => {
+    if (abortSignal?.aborted) {
+      throw abortSignal.reason ?? new Error("LTC WAV generation was cancelled.");
+    }
+  };
 
   try {
+    throwIfAborted();
     handle = await fs.open(partialPath, "wx");
     await handle.writeFile(header);
     const framesPerChunk = 300;
     for (let offset = 0; offset < frameCount; offset += framesPerChunk) {
+      throwIfAborted();
       const chunkFrames = Math.min(framesPerChunk, frameCount - offset);
       const samples = synthesizeLtcChunk(
         startFrame + offset,
@@ -671,6 +679,7 @@ export async function writeLtcWavFile(
       await handle.writeFile(encodePcm16(samples));
       samplesWritten += samples.length;
     }
+    throwIfAborted();
     const terminalGuard = synthesizeTerminalGuard(
       normalizedRate,
       sampleRate,
@@ -680,6 +689,7 @@ export async function writeLtcWavFile(
     );
     await handle.writeFile(encodePcm16(terminalGuard));
     samplesWritten += terminalGuard.length;
+    throwIfAborted();
     await handle.close();
     handle = undefined;
 
